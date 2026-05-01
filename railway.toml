@@ -1,0 +1,21 @@
+[build]
+builder = "NIXPACKS"
+
+[deploy]
+startCommand = "npm start"
+healthcheckPath = "/"
+healthcheckTimeout = 100
+
+[services.backend]
+builder = "NIXPACKS"
+buildCommand = "npm install"
+startCommand = "node server.js"
+watch = ["backend/**"]
+source = "backend"
+
+[services.frontend]
+builder = "NIXPACKS"
+buildCommand = "npm install && npm run build"
+startCommand = "npm run preview -- --host 0.0.0.0 --port $PORT"
+watch = ["frontend/**"]
+source = "frontend"
