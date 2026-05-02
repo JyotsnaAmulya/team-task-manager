@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle2, Clock, AlertCircle, ListTodo } from 'lucide-react';
 import api from '../api/axios';
+import useAuthStore from '../store/authStore';
 
 const StatCard = ({ title, value, icon: Icon, color, delay }) => (
   <motion.div 
@@ -29,6 +30,7 @@ const StatCard = ({ title, value, icon: Icon, color, delay }) => (
 const Dashboard = () => {
   const [stats, setStats] = useState({ total: 0, completed: 0, pending: 0, overdue: 0 });
   const [loading, setLoading] = useState(true);
+  const { user } = useAuthStore();
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -67,7 +69,7 @@ const Dashboard = () => {
 
   return (
     <div className="animate-fade-in">
-      <h1 className="page-title">Dashboard Overview</h1>
+      <h1 className="page-title">Dashboard Overview ({user?.role || 'Guest'})</h1>
       
       <div className="glass-panel" style={{ padding: '32px', marginBottom: '32px', background: 'linear-gradient(135deg, rgba(48, 25, 52, 0.05), rgba(48, 25, 52, 0.1))' }}>
         <h2 style={{ fontSize: '20px', marginBottom: '16px', color: 'var(--accent-primary)' }}>Welcome to Team-Task-Manager!</h2>
