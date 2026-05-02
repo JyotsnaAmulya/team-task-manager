@@ -23,7 +23,7 @@ const Projects = () => {
     try {
       setLoading(true);
       const res = await api.get('/projects');
-      setProjects(res.data);
+      setProjects(Array.isArray(res.data) ? res.data : []);
       setError('');
     } catch (err) {
       console.error(err);
@@ -36,7 +36,7 @@ const Projects = () => {
   const fetchUsers = async () => {
     try {
       const res = await api.get('/users');
-      setUsers(res.data);
+      setUsers(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       console.error(err);
     }

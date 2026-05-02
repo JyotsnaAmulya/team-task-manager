@@ -34,7 +34,7 @@ const Dashboard = () => {
     const fetchTasks = async () => {
       try {
         const res = await api.get('/tasks');
-        const tasks = res.data;
+        const tasks = Array.isArray(res.data) ? res.data : [];
         
         const now = new Date();
         let total = tasks.length;
