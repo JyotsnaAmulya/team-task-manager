@@ -17,6 +17,7 @@ const app = express();
 // ✅ Better CORS (handles Railway + local)
 app.use(cors({
   origin: [
+    "https://team-task-manager.up.railway.app",
     "https://team-task-manager-production-3417.up.railway.app",
     "https://team-task-manager-production-bb6b.up.railway.app",
     "http://localhost:3000",
@@ -47,6 +48,11 @@ app.listen(PORT, '0.0.0.0', () => {
 });
 
 // ✅ Connect DB
-mongoose.connect(process.env.MONGO_URI)
+mongoose.connect(process.env.MONGO_URI, {
+  serverSelectionTimeoutMS: 5000 // Timeout after 5 seconds instead of hanging
+})
   .then(() => logger.info('✅ MongoDB connected'))
-  .catch(err => logger.error('❌ MongoDB error:', err));
+  .catch(err => {
+    logger.error('❌ MongoDB connection error:', err.message);
+    // On Railway, if DB fails, it's better to log it clearly
+  });

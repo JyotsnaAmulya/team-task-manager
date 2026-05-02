@@ -12,13 +12,13 @@ export const protect = (req, res, next) => {
       next();
     } catch (error) {
       logger.warn(`Token verification failed: ${error.message}`);
-      res.status(401).json({ message: 'Not authorized, token failed' });
+      return res.status(401).json({ message: 'Not authorized, token failed' });
     }
   }
 
   if (!token) {
     logger.warn('No token provided in authorization header');
-    res.status(401).json({ message: 'Not authorized, no token' });
+    return res.status(401).json({ message: 'Not authorized, no token' });
   }
 };
 
