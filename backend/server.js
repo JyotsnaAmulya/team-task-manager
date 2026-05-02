@@ -40,6 +40,17 @@ app.get('/', (req, res) => {
   res.send('API is running...');
 });
 
+// ✅ Health Check Endpoint
+app.get('/api/health', (req, res) => {
+  const dbStatus = mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected';
+  res.json({
+    status: 'Healthy',
+    uptime: process.uptime(),
+    database: dbStatus,
+    timestamp: new Date().toISOString()
+  });
+});
+
 const PORT = process.env.PORT || 5000;
 
 // ✅ Start server

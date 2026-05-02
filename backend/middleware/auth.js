@@ -12,6 +12,7 @@ export const protect = (req, res, next) => {
       next();
     } catch (error) {
       logger.warn(`Token verification failed: ${error.message}`);
+      logger.warn('writing in log')
       return res.status(401).json({ message: 'Not authorized, token failed' });
     }
   }

@@ -13,9 +13,11 @@ router.route('/')
       const project = new Project({ name, description, members });
       const createdProject = await project.save();
       logger.info(`Project created successfully: ${createdProject.name} (ID: ${createdProject._id})`);
+      logger.info("Project added successfully");
       res.status(201).json(createdProject);
     } catch (error) {
       logger.error('Project creation error:', error);
+      logger.error("Project not added successfully");
       res.status(500).json({ message: error.message });
     }
   })
