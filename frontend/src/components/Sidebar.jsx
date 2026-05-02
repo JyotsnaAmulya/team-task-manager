@@ -29,9 +29,12 @@ const Sidebar = () => {
         boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)'
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '48px', padding: '0 8px' }}>
-        <Hexagon size={28} color="#ffffff" />
-        <h2 style={{ fontSize: '18px', fontWeight: '700', letterSpacing: '-0.5px', color: '#ffffff' }}>Team-Task-Manager</h2>
+      <div style={{ padding: '24px', marginBottom: '12px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <Hexagon size={32} color="#ffffff" />
+          <h2 style={{ fontSize: '18px', fontWeight: '700', color: '#ffffff', margin: 0 }}>Team-Task</h2>
+        </div>
+        <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)', marginTop: '8px', letterSpacing: '0.1em' }}>VERSION 1.2</div>
       </div>
 
       <nav style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 }}>
