@@ -8,6 +8,7 @@ const Tasks = () => {
   const [tasks, setTasks] = useState([]);
   const [projects, setProjects] = useState([]);
   const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [error, setError] = useState('');
   const [newTask, setNewTask] = useState({ title: '', description: '', status: 'Todo', dueDate: '', project: '', assignee: '' });
@@ -24,9 +25,16 @@ const Tasks = () => {
 
   const fetchTasks = async () => {
     try {
+      setLoading(true);
       const res = await api.get('/tasks');
       setTasks(res.data);
-    } catch (err) { console.error(err); }
+      setError('');
+    } catch (err) {
+      console.error(err);
+      setError('Failed to load tasks. Please try refreshing.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const fetchProjects = async () => {
@@ -79,55 +87,61 @@ const Tasks = () => {
       </div>
 
       <div style={{ display: 'flex', gap: '24px', flex: 1, overflowX: 'auto', paddingBottom: '16px' }}>
-        {columns.map((col, i) => (
-          <div key={col} style={{ flex: 1, minWidth: '300px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-              <div style={{ 
-                width: '8px', height: '8px', borderRadius: '50%',
-                background: col === 'Todo' ? 'var(--status-todo)' : col === 'In Progress' ? 'var(--status-in-progress)' : 'var(--status-done)'
-              }}></div>
-              <h3 style={{ fontSize: '14px', fontWeight: '600', color: 'var(--text-secondary)' }}>{col}</h3>
-              <span style={{ background: 'var(--bg-tertiary)', padding: '2px 8px', borderRadius: '12px', fontSize: '12px', color: 'var(--text-muted)' }}>
-                {tasks.filter(t => t.status === col).length}
-              </span>
-            </div>
-            
-            {tasks.filter(t => t.status === col).map((task, idx) => (
-              <motion.div 
-                key={task._id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.05 }}
-                className="glass-panel"
-                style={{ padding: '16px', background: 'var(--bg-secondary)', cursor: 'grab' }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
-                  <h4 style={{ fontWeight: '500', fontSize: '15px' }}>{task.title}</h4>
-                  <select 
-                    value={task.status} 
-                    onChange={(e) => handleStatusChange(task._id, e.target.value)}
-                    style={{ padding: '4px 8px', fontSize: '12px', background: 'var(--bg-tertiary)', border: 'none', color: 'var(--text-muted)' }}
-                  >
-                    {columns.map(c => <option key={c} value={c}>{c}</option>)}
-                  </select>
+        {loading ? (
+          <div style={{ color: 'var(--text-muted)' }}>Loading tasks...</div>
+        ) : (
+          <>
+            {columns.map((col, i) => (
+              <div key={col} style={{ flex: 1, minWidth: '300px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                  <div style={{ 
+                    width: '8px', height: '8px', borderRadius: '50%',
+                    background: col === 'Todo' ? 'var(--status-todo)' : col === 'In Progress' ? 'var(--status-in-progress)' : 'var(--status-done)'
+                  }}></div>
+                  <h3 style={{ fontSize: '14px', fontWeight: '600', color: 'var(--text-secondary)' }}>{col}</h3>
+                  <span style={{ background: 'var(--bg-tertiary)', padding: '2px 8px', borderRadius: '12px', fontSize: '12px', color: 'var(--text-muted)' }}>
+                    {tasks.filter(t => t.status === col).length}
+                  </span>
                 </div>
-                {task.description && <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '16px', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{task.description}</p>}
                 
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--glass-border)', paddingTop: '12px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-secondary)', fontSize: '12px' }}>
-                    <Calendar size={14} />
-                    {task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'No date'}
-                  </div>
-                  {task.assignee && (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-secondary)', fontSize: '12px', background: 'rgba(0,0,0,0.05)', padding: '4px 8px', borderRadius: '12px' }}>
-                      <UserIcon size={12} /> {task.assignee.name.split(' ')[0]}
+                {tasks.filter(t => t.status === col).map((task, idx) => (
+                  <motion.div 
+                    key={task._id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.05 }}
+                    className="glass-panel"
+                    style={{ padding: '16px', background: 'var(--bg-secondary)', cursor: 'grab' }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+                      <h4 style={{ fontWeight: '500', fontSize: '15px' }}>{task.title}</h4>
+                      <select 
+                        value={task.status} 
+                        onChange={(e) => handleStatusChange(task._id, e.target.value)}
+                        style={{ padding: '4px 8px', fontSize: '12px', background: 'var(--bg-tertiary)', border: 'none', color: 'var(--text-muted)' }}
+                      >
+                        {columns.map(c => <option key={c} value={c}>{c}</option>)}
+                      </select>
                     </div>
-                  )}
-                </div>
-              </motion.div>
+                    {task.description && <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '16px', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{task.description}</p>}
+                    
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--glass-border)', paddingTop: '12px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-secondary)', fontSize: '12px' }}>
+                        <Calendar size={14} />
+                        {task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'No date'}
+                      </div>
+                      {task.assignee && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-secondary)', fontSize: '12px', background: 'rgba(0,0,0,0.05)', padding: '4px 8px', borderRadius: '12px' }}>
+                          <UserIcon size={12} /> {task.assignee.name.split(' ')[0]}
+                        </div>
+                      )}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
             ))}
-          </div>
-        ))}
+          </>
+        )}
       </div>
     </div>
 
