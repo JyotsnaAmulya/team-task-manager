@@ -67,7 +67,19 @@ const Dashboard = () => {
 
   return (
     <div className="animate-fade-in">
-      <h1 className="page-title">Dashboard</h1>
+      <h1 className="page-title">Dashboard Overview</h1>
+      
+      <div className="glass-panel" style={{ padding: '32px', marginBottom: '32px', background: 'linear-gradient(135deg, rgba(48, 25, 52, 0.05), rgba(48, 25, 52, 0.1))' }}>
+        <h2 style={{ fontSize: '20px', marginBottom: '16px', color: 'var(--accent-primary)' }}>Welcome to Team-Task-Manager!</h2>
+        <p style={{ color: 'var(--text-secondary)', lineHeight: '1.6', maxWidth: '600px' }}>
+          It looks like you're just getting started. Follow these steps to set up your team:
+        </p>
+        <ul style={{ marginTop: '16px', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '14px' }}>
+          <li>🚀 <strong>Step 1:</strong> Go to the <strong>Projects</strong> page and create your first project.</li>
+          <li>📝 <strong>Step 2:</strong> Go to the <strong>Tasks</strong> page to add tasks to that project.</li>
+          <li>👥 <strong>Step 3:</strong> Use the <strong>Dashboard</strong> to track your progress!</li>
+        </ul>
+      </div>
       
       <div style={{ 
         display: 'grid', 
