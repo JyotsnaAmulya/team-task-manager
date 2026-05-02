@@ -12,5 +12,5 @@ WORKDIR /app
 COPY --from=build-stage /app/dist ./dist
 RUN npm install -g serve
 EXPOSE 3000
-# Railway provides the PORT environment variable
-CMD ["sh", "-c", "serve -s dist -l $PORT"]
+# Bind to 0.0.0.0 so Railway can reach it (not just localhost)
+CMD ["sh", "-c", "serve -s dist -l tcp://0.0.0.0:${PORT:-3000}"]
