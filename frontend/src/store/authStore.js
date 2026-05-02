@@ -14,16 +14,18 @@ const useAuthStore = create((set) => {
     token: localStorage.getItem('token') || null,
     
     login: (userData, token) => {
-      // Debug log to see exactly what the server is returning
-      console.log("AuthStore: Login successful. User Data:", userData);
+      console.log("AuthStore: Login successful. Raw Data:", userData);
       
-      // Separate token from user data if needed
-      const userToSave = { ...userData };
-      if (userToSave.token) delete userToSave.token;
+      // Handle both flat and nested responses
+      const actualUser = userData.user ? { ...userData.user } : { ...userData };
+      const actualToken = token || userData.token;
 
-      localStorage.setItem('user', JSON.stringify(userToSave));
-      localStorage.setItem('token', token);
-      set({ user: userToSave, token });
+      // Ensure we don't save the token inside the user object
+      if (actualUser.token) delete actualUser.token;
+
+      localStorage.setItem('user', JSON.stringify(actualUser));
+      localStorage.setItem('token', actualToken);
+      set({ user: actualUser, token: actualToken });
     },
     
     logout: () => {
