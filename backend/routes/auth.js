@@ -13,7 +13,14 @@ const generateToken = (id, role) => {
 router.post('/signup', async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
-    logger.info(`Signup attempt for email: ${email}`);
+    
+    // Log the request body (excluding password) for debugging
+    logger.info(`Signup attempt - Name: ${name}, Email: ${email}, Role: ${role}`);
+
+    if (!name || !email || !password) {
+      logger.warn(`Signup failed: Missing fields for email: ${email}`);
+      return res.status(400).json({ message: 'Please provide all required fields (name, email, password)' });
+    }
     
     const userExists = await User.findOne({ email });
 
