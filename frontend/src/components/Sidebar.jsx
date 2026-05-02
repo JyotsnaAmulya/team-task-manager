@@ -48,8 +48,19 @@ const Sidebar = () => {
 
       <div style={{ marginTop: 'auto', paddingTop: '24px', borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
         <div style={{ marginBottom: '16px', padding: '0 8px' }}>
-          <p style={{ fontSize: '14px', fontWeight: '500', color: '#ffffff' }}>{user?.name}</p>
-          <p style={{ fontSize: '12px', color: 'rgba(255, 255, 255, 0.7)' }}>{user?.role}</p>
+          <p style={{ fontSize: '14px', fontWeight: '500', color: '#ffffff', marginBottom: '4px' }}>{user?.name}</p>
+          <span style={{ 
+            fontSize: '10px', 
+            fontWeight: '700', 
+            letterSpacing: '0.05em', 
+            textTransform: 'uppercase',
+            background: user?.role === 'Admin' ? '#22c55e' : 'rgba(255, 255, 255, 0.15)',
+            color: '#ffffff',
+            padding: '2px 8px',
+            borderRadius: '4px'
+          }}>
+            {user?.role || 'Guest'}
+          </span>
         </div>
         <button 
           onClick={handleLogout}
