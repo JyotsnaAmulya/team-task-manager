@@ -1,16 +1,22 @@
 # Stage 1: Build
-FROM node:20-alpine as build-stage
+FROM node:20-alpine AS build-stage
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
 RUN npm run build
 
-# Stage 2: Serve
-FROM node:20-alpine
+# Stage 2: Serve with Nginx, using PORT env variable
+FROM nginx:stable-alpine
 WORKDIR /app
-COPY --from=build-stage /app/dist ./dist
-RUN npm install -g serve
-EXPOSE 3000
-# Bind to 0.0.0.0 so Railway can reach it (not just localhost)
-CMD ["sh", "-c", "serve -s dist -l tcp://0.0.0.0:${PORT:-3000}"]
+
+# Copy build output
+COPY --from=build-stage /app/dist /usr/share/nginx/html
+
+# Copy a startup script that generates nginx.conf with the correct port at runtime
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
+
+EXPOSE 8080
+
+CMD ["/docker-entrypoint.sh"]
