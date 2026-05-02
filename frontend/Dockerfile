@@ -6,15 +6,14 @@ RUN npm install
 COPY . .
 RUN npm run build
 
-# Stage 2: Serve with Nginx - inject PORT at runtime, preserve nginx $vars
+# Stage 2: Serve with Nginx
 FROM nginx:stable-alpine
+
+# Copy build output
 COPY --from=build-stage /app/dist /usr/share/nginx/html
+
+# The official nginx image automatically runs envsubst on files in /etc/nginx/templates/*.template
+# and outputs the result to /etc/nginx/conf.d/*.conf
 COPY nginx.conf.template /etc/nginx/templates/default.conf.template
 
-# Only substitute ${PORT}, leave nginx $uri etc untouched
-ENV NGINX_ENVSUBST_TEMPLATE_SUFFIX=.template
-ENV NGINX_ENVSUBST_OUTPUT_DIR=/etc/nginx/conf.d
-
-EXPOSE 8080
-# Override entrypoint args to only substitute PORT
-CMD ["/bin/sh", "-c", "envsubst '${PORT}' < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
+# No EXPOSE or CMD needed - Railway and Nginx handle it
