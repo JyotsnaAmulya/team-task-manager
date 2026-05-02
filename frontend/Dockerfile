@@ -6,14 +6,19 @@ RUN npm install
 COPY . .
 RUN npm run build
 
-# Stage 2: Serve with Nginx
-FROM nginx:stable-alpine
+# Stage 2: Serve with Node/Express
+FROM node:20-alpine
+WORKDIR /app
+# Copy the built assets
+COPY --from=build-stage /app/dist ./dist
+# Copy package files to install production dependencies
+COPY package*.json ./
+RUN npm install --production
+# Copy the server script
+COPY server.js ./
 
-# Copy build output
-COPY --from=build-stage /app/dist /usr/share/nginx/html
+# Railway provides the PORT environment variable
+ENV PORT=3000
+EXPOSE 3000
 
-# The official nginx image automatically runs envsubst on files in /etc/nginx/templates/*.template
-# and outputs the result to /etc/nginx/conf.d/*.conf
-COPY nginx.conf.template /etc/nginx/templates/default.conf.template
-
-# No EXPOSE or CMD needed - Railway and Nginx handle it
+CMD ["node", "server.js"]
