@@ -6,17 +6,10 @@ RUN npm install
 COPY . .
 RUN npm run build
 
-# Stage 2: Serve with Nginx, using PORT env variable
+# Stage 2: Serve with Nginx (uses built-in envsubst template support)
 FROM nginx:stable-alpine
-WORKDIR /app
-
-# Copy build output
 COPY --from=build-stage /app/dist /usr/share/nginx/html
-
-# Copy a startup script that generates nginx.conf with the correct port at runtime
-COPY docker-entrypoint.sh /docker-entrypoint.sh
-RUN chmod +x /docker-entrypoint.sh
-
+# Template file: nginx docker entrypoint auto-runs envsubst on *.template files
+COPY nginx.conf.template /etc/nginx/templates/default.conf.template
 EXPOSE 8080
-
-CMD ["/docker-entrypoint.sh"]
+CMD ["nginx", "-g", "daemon off;"]
