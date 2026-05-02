@@ -1,25 +1,16 @@
 # Stage 1: Build
 FROM node:20-alpine as build-stage
-
 WORKDIR /app
-
 COPY package*.json ./
 RUN npm install
-
 COPY . .
-
-# Build the app (Vite outputs to 'dist')
 RUN npm run build
 
 # Stage 2: Serve
-FROM nginx:stable-alpine
-
-# Copy the build output to nginx's serving directory
-COPY --from=build-stage /app/dist /usr/share/nginx/html
-
-# Copy custom nginx config
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
+FROM node:20-alpine
+WORKDIR /app
+COPY --from=build-stage /app/dist ./dist
+RUN npm install -g serve
+EXPOSE 3000
+# Railway provides the PORT environment variable
+CMD ["sh", "-c", "serve -s dist -l $PORT"]
