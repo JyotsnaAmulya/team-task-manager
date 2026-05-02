@@ -2,6 +2,7 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
+import logger from '../utils/logger.js';
 
 const router = express.Router();
 
@@ -12,9 +13,12 @@ const generateToken = (id, role) => {
 router.post('/signup', async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
+    logger.info(`Signup attempt for email: ${email}`);
+    
     const userExists = await User.findOne({ email });
 
     if (userExists) {
+      logger.warn(`Signup failed: User already exists for email: ${email}`);
       return res.status(400).json({ message: 'User already exists' });
     }
 
@@ -29,6 +33,7 @@ router.post('/signup', async (req, res) => {
     });
 
     if (user) {
+      logger.info(`User signed up successfully: ${user.email} (${user.role})`);
       res.status(201).json({
         _id: user._id,
         name: user.name,
@@ -37,9 +42,11 @@ router.post('/signup', async (req, res) => {
         token: generateToken(user._id, user.role)
       });
     } else {
+      logger.error('Signup failed: Invalid user data');
       res.status(400).json({ message: 'Invalid user data' });
     }
   } catch (error) {
+    logger.error(`Signup error: ${error.message}`);
     res.status(500).json({ message: error.message });
   }
 });
@@ -47,9 +54,12 @@ router.post('/signup', async (req, res) => {
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
+    logger.info(`Login attempt for email: ${email}`);
+    
     const user = await User.findOne({ email });
 
     if (user && (await bcrypt.compare(password, user.password))) {
+      logger.info(`User logged in successfully: ${user.email}`);
       res.json({
         _id: user._id,
         name: user.name,
@@ -58,9 +68,11 @@ router.post('/login', async (req, res) => {
         token: generateToken(user._id, user.role)
       });
     } else {
+      logger.warn(`Login failed: Invalid credentials for email: ${email}`);
       res.status(401).json({ message: 'Invalid email or password' });
     }
   } catch (error) {
+    logger.error(`Login error: ${error.message}`);
     res.status(500).json({ message: error.message });
   }
 });
