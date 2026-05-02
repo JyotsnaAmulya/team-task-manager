@@ -7,6 +7,7 @@ import { Plus, Users } from 'lucide-react';
 const Projects = () => {
   const [projects, setProjects] = useState([]);
   const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [error, setError] = useState('');
   const [newProject, setNewProject] = useState({ name: '', description: '', members: [] });
@@ -20,10 +21,15 @@ const Projects = () => {
 
   const fetchProjects = async () => {
     try {
+      setLoading(true);
       const res = await api.get('/projects');
       setProjects(res.data);
+      setError('');
     } catch (err) {
       console.error(err);
+      setError('Failed to load projects. Please try refreshing.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -68,30 +74,36 @@ const Projects = () => {
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '24px' }}>
-        {projects.map((project, idx) => (
-          <motion.div 
-            key={project._id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: idx * 0.1 }}
-            className="glass-panel"
-            style={{ padding: '24px' }}
-          >
-            <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '8px' }}>{project.name}</h3>
-            <p style={{ color: 'var(--text-muted)', fontSize: '14px', marginBottom: '24px', minHeight: '40px' }}>
-              {project.description || 'No description provided.'}
-            </p>
-            
-            <div style={{ borderTop: '1px solid var(--glass-border)', paddingTop: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Users size={16} color="var(--text-muted)" />
-              <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
-                {project.members.length} {project.members.length === 1 ? 'member' : 'members'}
-              </span>
-            </div>
-          </motion.div>
-        ))}
-        {projects.length === 0 && (
-          <div style={{ color: 'var(--text-muted)' }}>No projects found.</div>
+        {loading ? (
+          <div style={{ color: 'var(--text-muted)' }}>Loading projects...</div>
+        ) : (
+          <>
+            {projects.map((project, idx) => (
+              <motion.div 
+                key={project._id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.1 }}
+                className="glass-panel"
+                style={{ padding: '24px' }}
+              >
+                <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '8px' }}>{project.name}</h3>
+                <p style={{ color: 'var(--text-muted)', fontSize: '14px', marginBottom: '24px', minHeight: '40px' }}>
+                  {project.description || 'No description provided.'}
+                </p>
+                
+                <div style={{ borderTop: '1px solid var(--glass-border)', paddingTop: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Users size={16} color="var(--text-muted)" />
+                  <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
+                    {project.members.length} {project.members.length === 1 ? 'member' : 'members'}
+                  </span>
+                </div>
+              </motion.div>
+            ))}
+            {projects.length === 0 && (
+              <div style={{ color: 'var(--text-muted)' }}>No projects found.</div>
+            )}
+          </>
         )}
       </div>
     </div>
