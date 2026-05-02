@@ -40,13 +40,15 @@ router.post('/signup', async (req, res) => {
     });
 
     if (user) {
+      const token = generateToken(user._id, user.role);
       logger.info(`User signed up successfully: ${user.email} (${user.role})`);
-      res.status(201).json({
+      
+      return res.status(201).json({
         _id: user._id,
         name: user.name,
         email: user.email,
         role: user.role,
-        token: generateToken(user._id, user.role)
+        token: token
       });
     } else {
       logger.error('Signup failed: Invalid user data');
@@ -66,13 +68,15 @@ router.post('/login', async (req, res) => {
     const user = await User.findOne({ email });
 
     if (user && (await bcrypt.compare(password, user.password))) {
+      const token = generateToken(user._id, user.role);
       logger.info(`User logged in successfully: ${user.email}`);
-      res.json({
+      
+      return res.json({
         _id: user._id,
         name: user.name,
         email: user.email,
         role: user.role,
-        token: generateToken(user._id, user.role)
+        token: token
       });
     } else {
       logger.warn(`Login failed: Invalid credentials for email: ${email}`);
