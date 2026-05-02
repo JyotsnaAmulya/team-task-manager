@@ -11,7 +11,11 @@ import userRoutes from './routes/users.js';
 dotenv.config();
 
 const app = express();
-app.use(cors());
+// app.use(cors());
+app.use(cors({
+  origin: "https://focused-spontaneity-production-dbe4.up.railway.app",
+  credentials: true
+}));
 app.use(express.json());
 
 // Routes
