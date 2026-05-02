@@ -11,14 +11,20 @@ import userRoutes from './routes/users.js';
 dotenv.config();
 
 const app = express();
-// app.use(cors());
+
+// ✅ Better CORS (handles Railway + local)
 app.use(cors({
-  origin: "https://focused-spontaneity-production-dbe4.up.railway.app",
+  origin: [
+    "https://team-task-manager-production-3417.up.railway.app",
+    "http://localhost:3000"
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
+
 app.use(express.json());
 
-// Routes
+// ✅ Routes (IMPORTANT: /api prefix)
 app.use('/api/auth', authRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/tasks', taskRoutes);
@@ -30,27 +36,12 @@ app.get('/', (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 
-// Connect to MongoDB
-// mongoose.connect(process.env.MONGO_URI)
-//   .then(() => {
-//     console.log('MongoDB connected');
-//     app.listen(PORT, () => {
-//       console.log(`Server running on port ${PORT}`);
-//     });
-//   })
-//   .catch((err) => {
-//     console.error('MongoDB connection error:', err);
-//     process.exit(1);
-//   });
-
-console.log("🚀 Booting server...");
-
-// Start server FIRST (IMPORTANT)
+// ✅ Start server
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`🔥 Server running on port ${PORT}`);
 });
 
-// Connect DB AFTER server starts (non-blocking)
+// ✅ Connect DB
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('✅ MongoDB connected'))
   .catch(err => console.error('❌ MongoDB error:', err));
