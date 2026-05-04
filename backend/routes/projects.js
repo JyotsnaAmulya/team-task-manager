@@ -8,24 +8,31 @@ const router = express.Router();
 router.route('/')
   .post(protect, admin, async (req, res) => {
     try {
-      const { name, description, members } = req.body;
+      const { name, description, members = [] } = req.body;
+      if (!name) {
+        return res.status(400).json({ message: 'Project name is required' });
+      }
+      logger.debug(`Project creation request body: ${JSON.stringify(req.body)}`);
       logger.info(`Project creation attempt: ${name} by user ID: ${req.user.id}`);
-      const project = new Project({ name, description, members });
+      const project = new Project({ name, description, members: Array.isArray(members) ? members : [] });
       const createdProject = await project.save();
       logger.info(`Project created successfully: ${createdProject.name} (ID: ${createdProject._id})`);
-      logger.info("Project added successfully");
       res.status(201).json(createdProject);
     } catch (error) {
       logger.error('Project creation error:', error);
-      logger.error("Project not added successfully");
-      res.status(500).json({ message: error.message });
+      res.status(400).json({ 
+        message: 'Project creation failed', 
+        error: error.message,
+        details: error.errors ? Object.keys(error.errors).map(key => error.errors[key].message) : []
+      });
     }
   })
   .get(protect, async (req, res) => {
     try {
       logger.debug(`Fetching projects for user ID: ${req.user.id} (${req.user.role})`);
       let projects;
-      if (req.user.role === 'Admin') {
+      const role = req.user.role ? req.user.role.toLowerCase() : '';
+      if (role === 'admin') {
         projects = await Project.find({}).populate('members', 'name email');
       } else {
         projects = await Project.find({ members: req.user.id }).populate('members', 'name email');

@@ -57,7 +57,7 @@ const Sidebar = () => {
             fontWeight: '700', 
             letterSpacing: '0.05em', 
             textTransform: 'uppercase',
-            background: user?.role === 'Admin' ? '#22c55e' : 'rgba(255, 255, 255, 0.15)',
+            background: user?.role?.toLowerCase() === 'admin' ? '#22c55e' : 'rgba(255, 255, 255, 0.15)',
             color: '#ffffff',
             padding: '2px 8px',
             borderRadius: '4px'

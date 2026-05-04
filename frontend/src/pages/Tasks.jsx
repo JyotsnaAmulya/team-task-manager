@@ -13,7 +13,7 @@ const Tasks = () => {
   const [error, setError] = useState('');
   const [newTask, setNewTask] = useState({ title: '', description: '', status: 'Todo', dueDate: '', project: '', assignee: '' });
   const { user } = useAuthStore();
-  const isAdmin = user?.role === 'Admin';
+  const isAdmin = user?.role?.toLowerCase() === 'admin';
 
   useEffect(() => {
     fetchTasks();

@@ -12,7 +12,8 @@ const Projects = () => {
   const [error, setError] = useState('');
   const [newProject, setNewProject] = useState({ name: '', description: '', members: [] });
   const { user } = useAuthStore();
-  const isAdmin = user?.role === 'Admin';
+  const isAdmin = user?.role?.toLowerCase() === 'admin';
+  console.log("Projects Page: User from store:", user, "IsAdmin:", isAdmin);
 
   useEffect(() => {
     fetchProjects();

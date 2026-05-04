@@ -27,7 +27,8 @@ router.route('/')
     try {
       logger.debug(`Fetching tasks for user ID: ${req.user.id} (${req.user.role})`);
       let tasks;
-      if (req.user.role === 'Admin') {
+      const role = req.user.role ? req.user.role.toLowerCase() : '';
+      if (role === 'admin') {
         tasks = await Task.find({}).populate('project', 'name').populate('assignee', 'name email');
       } else {
         tasks = await Task.find({ assignee: req.user.id }).populate('project', 'name').populate('assignee', 'name email');
@@ -47,7 +48,8 @@ router.route('/:id')
       const task = await Task.findById(req.params.id);
       
       if (task) {
-        if (req.user.role === 'Admin') {
+        const role = req.user.role ? req.user.role.toLowerCase() : '';
+        if (role === 'admin') {
             task.title = title || task.title;
             task.description = description || task.description;
             task.dueDate = dueDate || task.dueDate;

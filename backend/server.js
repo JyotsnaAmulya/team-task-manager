@@ -43,12 +43,13 @@ app.get('/', (req, res) => {
 
 // ✅ Health Check Endpoint
 app.get('/api/health', (req, res) => {
-  const dbStatus = mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected';
+  const db = mongoose.connection;
   res.json({
     status: 'Healthy',
-    version: '1.2-BACKEND',
+    version: '1.3-DB-CHECK',
+    databaseName: db.name || 'Not Connected',
+    connection: db.readyState === 1 ? 'Connected' : 'Disconnected',
     uptime: process.uptime(),
-    database: dbStatus,
     timestamp: new Date().toISOString()
   });
 });

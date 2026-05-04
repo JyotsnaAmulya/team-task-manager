@@ -24,10 +24,12 @@ export const protect = (req, res, next) => {
 };
 
 export const admin = (req, res, next) => {
-  if (req.user && req.user.role === 'Admin') {
+  logger.debug(`Admin middleware check - User: ${JSON.stringify(req.user)}`);
+  const role = req.user?.role?.toLowerCase();
+  if (req.user && role === 'admin') {
     next();
   } else {
-    logger.warn(`Unauthorized Admin access attempt by user ID: ${req.user?.id}`);
+    logger.warn(`Unauthorized Admin access attempt by user ID: ${req.user?.id}, Role: ${req.user?.role}`);
     res.status(403).json({ message: 'Not authorized as an Admin' });
   }
 };
