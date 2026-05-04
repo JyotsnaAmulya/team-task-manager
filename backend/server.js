@@ -17,10 +17,10 @@ const app = express();
 // ✅ Better CORS (handles Railway + local)
 app.use(cors({
   origin: [
-    "https://team-task-manager.up.railway.app",
+    // "https://team-task-manager.up.railway.app",
     "https://frontend-production-a887.up.railway.app",
-    "https://team-task-manager-production-3417.up.railway.app",
-    "https://team-task-manager-production-bb6b.up.railway.app",
+    // "https://team-task-manager-production-3417.up.railway.app",
+    // "https://team-task-manager-production-bb6b.up.railway.app",
     "http://localhost:3000",
     "http://localhost:5173"
   ],
