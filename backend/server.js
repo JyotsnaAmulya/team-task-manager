@@ -15,37 +15,37 @@ dotenv.config();
 
 const app = express();
 
-console.log("🚀 Server initializing...");
+console.log(" Server initializing...");
 
-// ✅ GLOBAL REQUEST LOGGER (VERY IMPORTANT)
+// GLOBAL REQUEST LOGGER (VERY IMPORTANT)
 app.use((req, res, next) => {
-  console.log(`📥 Request: ${req.method} ${req.url}`);
-  console.log("🌐 Origin Header:", req.headers.origin);
+  console.log(` Request: ${req.method} ${req.url}`);
+  console.log(" Origin Header:", req.headers.origin);
   next();
 });
 
-// ✅ CORS DEBUG VERSION
+// CORS VERSIONs
 app.use(cors({
   origin: function (origin, callback) {
-    console.log("🌐 Incoming Origin:", origin);
+    console.log(" Incoming Origin:", origin);
 
     const allowedOrigins = [
-      "https://frontend-production-a887.up.railway.app",
+      process.env.FRONTEND_URL,
       "http://localhost:3000",
       "http://localhost:5173",
       "http://localhost:5174"
     ];
 
     if (!origin) {
-      console.log("⚠️ No origin (Postman / server-to-server request)");
+      console.log(" No origin (Postman / server-to-server request)");
       return callback(null, true);
     }
 
     if (allowedOrigins.includes(origin)) {
-      console.log("✅ CORS Allowed:", origin);
+      console.log(" CORS Allowed:", origin);
       callback(null, true);
     } else {
-      console.log("❌ CORS Blocked:", origin);
+      console.log(" CORS Blocked:", origin);
       callback(new Error("Not allowed by CORS"));
     }
   },
@@ -56,25 +56,25 @@ app.use(cors({
 app.use(express.json());
 app.use(requestLogger);
 
-// ✅ ROUTE LOGGING WRAPPER
+//  ROUTE LOGGING WRAPPER
 const logRoute = (name) => (req, res, next) => {
   console.log(`Route Hit: ${name}`);
   next();
 };
 
-// ✅ Routes
+//  Routes
 app.use('/api/auth', logRoute("AUTH"), authRoutes);
 app.use('/api/projects', logRoute("PROJECTS"), projectRoutes);
 app.use('/api/tasks', logRoute("TASKS"), taskRoutes);
 app.use('/api/users', logRoute("USERS"), userRoutes);
 
-// ✅ Root check
+//  Root check
 app.get('/', (req, res) => {
   console.log("Root endpoint hit");
   res.send('API is running...');
 });
 
-// ✅ Health check
+//  Health check
 app.get('/api/health', (req, res) => {
   console.log("Health check endpoint hit");
 
@@ -91,13 +91,13 @@ app.get('/api/health', (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 
-// ✅ Start server
+//  Start server
 app.listen(PORT, '0.0.0.0', () => {
   logger.info(`Server running on port ${PORT}`);
   console.log(`Server running on port ${PORT}`);
 });
 
-// ✅ MongoDB connection with logs
+//  MongoDB connection with logs
 console.log("Connecting to MongoDB...");
 
 mongoose.connect(process.env.MONGO_URI, {
@@ -112,7 +112,7 @@ mongoose.connect(process.env.MONGO_URI, {
     console.log('MongoDB connection error:', err.message);
   });
 
-// ✅ GLOBAL ERROR HANDLER (VERY IMPORTANT)
+//  GLOBAL ERROR HANDLER (VERY IMPORTANT)
 app.use((err, req, res, next) => {
   console.error("Global Error:", err.message);
 
